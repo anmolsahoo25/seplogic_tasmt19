@@ -1,5 +1,6 @@
 \documentclass{beamer}
 \usepackage[utf8]{inputenc}
+\usepackage{xcolor}
 
 \usetheme{Madrid}
 \usecolortheme{default}
@@ -63,7 +64,9 @@
 \begin{itemize}
 \item Given a decidable base-theory $T$, the syntax of separation logic $SL(T)_{Loc,Data}$ is presented
 \item $Loc$ and $Data$ represent the type of the address and the values
-\item E.g Setting $Loc$ and $Data$ to be $Int$, then our addresses and values are integers
+\item $Loc$ and $Data$ can be any sorts, but $Loc$ should be countably
+    infinite, for the purpose of the decision procedure
+\item For example, $Loc$ and $Data$ can be $Int$
 \end{itemize}
 
 \begin{align*}
@@ -78,11 +81,9 @@
             \lvert empty
 \end{align*}
 
-We use $E$ and $E'$ to denote expressions in the base theory, where pointer indirection is not used. \\
-\mscmt{\tiny{What do you mean by "pointer indirection not used"? Do you mean no dereferencing?  Why not?} \\[-0.15cm]
-It is strange to have Loc to be integers, but, I guess, it's OK; the paper has the restriction that Loc domain has to be
-countably infinite
-for obvious reasons}
+We use $E$ and $E'$ to denote expressions in the base theory,
+where heap indirection is not used. This is needed to syntactically
+rule out formulas like $F : (x \hookrightarrow v_1) = (y \hookrightarrow v_2)$
 \end{frame}
 %---------------------------------------------------------
 
@@ -104,8 +105,8 @@ The model consists of an interpretation $(I)$ and a heap $(h)$
     I,h &\models E = E' \hspace{3.5cm} & [\![ E ]\!]_I = [\![ E' ]\!]_I
 \end{align*}
 
-We use $[\![E]\!]_I$, to denote the value of $E$ under the interpretation $I$.\\
-\mscmt{\tiny{Must note domain of h has to be a finite subset of Loc and h  can be partial}}
+We use $[\![E]\!]_I$, to denote the value of $E$ under the interpretation $I$. Also, the domain of $h$ should be a subset of $Loc$ and it can be
+a partial function.
 \end{frame}
 
 \begin{frame}
@@ -124,7 +125,6 @@ Separating conjunction
 \end{align*}
 
 Where $h_1 \# h_2$ denotes that the heap domains are disjoint and $h_1 \circ h_2$ means their union. \\
-\mscmt{\tiny{I have changed $\bot$ to hash symbol as used in the paper}}
 \end{frame}
 
 \begin{frame}
@@ -163,8 +163,17 @@ Separating conjunction,
     & h : \{(0,10), (1,20)\} \\
     & I,h \models F
 \end{align*}
-\mscmt{\tiny{Also add a more interesting version of this example: x points-to y and y points x, with x and y in two disjoint partitions of heap}}
+\end{frame}
 
+\begin{frame}
+\frametitle{Examples}
+Another example,
+\begin{align*}
+    & F : x \hookrightarrow y * y \hookrightarrow x \\
+    & I : \{(x,0), (y,1)\} \\
+    & h : \{(0,1), (1, 0)\} \\
+    & I,h \models F
+\end{align*}
 \end{frame}
 
 \begin{frame}
@@ -186,6 +195,90 @@ Example,
 \end{align*}
 \end{frame}
 
+\begin{frame}
+\frametitle{Applications}
+Separation logic has been useful in Hoare logic for program verification. We will
+have a quick look at Hoare logic.
+
+\begin{align*}
+    & \{P\}S\{Q\} \\
+    & P : \textrm{Logical assertion on states - precondition} \\
+    & S : \textrm{Code section that modifies state} \\
+    & Q : \textrm{Logical assertion on states - postcondition}
+\end{align*}
+
+Example,
+\begin{align*}
+    \{x = 1\}x := 2\{x = 2\}
+\end{align*}
+
+The programs $S$ are defined against a language specification with 
+imperative commands such as skip, loops,
+variable and pointer assignments.
+\end{frame}
+
+\begin{frame}
+\frametitle{Applications}
+Now given a post-condition $Q$ and program $S$, we want to calculate the set
+of states, that the program can be in before, to end-up in $Q$ after execution.
+
+Example,
+\begin{align*}
+    \{x > 0\}x := x + 1\{x > 0\}
+\end{align*}
+
+This is also valid,
+\begin{align*}
+    \{x > -1\}x := x + 1\{x > 0\}
+\end{align*}
+
+In fact, $(x > -1) \to (x > 0)$, thus, $(x > -1)$ is weaker. Finding the
+weakest unique precondition, can then let us reason about all the states,
+that the program can be in before, to guarantee $Q$ to hold.
+\end{frame}
+
+\begin{frame}
+\frametitle{Applications}
+The first application of separation logic in Hoare-style verification is
+to do local reasoning, which is defined as,
+
+\begin{align*}
+    \frac{\{P\} S \{Q\}}{\{P * R\} S \{Q * R\}}
+\end{align*}
+
+Example,
+\begin{align*}
+    & \{\textrm{root} \hookrightarrow (\textrm{left}, \textrm{right}) * \textcolor{red}{\textrm{tree(left)}} * \textrm{tree(right)}\} \\
+    & \textrm{deletetree(left)} \\
+    & \{\textrm{root} \hookrightarrow (\textrm{left}, \textrm{right}) * \textcolor{green}{\textrm{emp}} * \textcolor{red}{\textrm{tree(right)}}\} \\
+    & \textrm{deletetree(right)} \\
+    & \{\textrm{root} \hookrightarrow (\textrm{left}, \textrm{right}) * \textrm{emp} * \textcolor{green}{\textrm{emp}}\} \\
+    & \textrm{free(root)} \\
+    & \{\textrm{emp} * \textrm{emp} * \textrm{emp}\} \\
+    & \{\textrm{emp}\}
+\end{align*}
+\end{frame}
+
+\begin{frame}
+\frametitle{Applications}
+Another application is to have a modus-ponens similar operation for heaps.
+
+\begin{align*}
+    P * (P \sepimp Q) \models Q
+\end{align*}
+Example,
+\begin{align*}
+    (x \hookrightarrow v_1) * (x \hookrightarrow v_1 \sepimp y \hookrightarrow v_2) \models (y \hookrightarrow v_2)
+\end{align*}
+Also, this is used in weakest pre-condition computation, where if we have a triple,
+    \begin{align*}
+    \{P\}x := 3\{Q\}
+    \end{align*}
+where the weakest precondition would be,
+    \begin{align*}
+        wp(x := 3, Q) \equiv (x \hookrightarrow -) * ((x \hookrightarrow 3) \sepimp Q)
+    \end{align*}
+\end{frame}
 \section{Relation with Pointer Logic}
 
 \begin{frame}
@@ -214,11 +307,18 @@ Separating conjunction,
     \item Being able to reason about these in SL is useful
     \item But inductive predicates introduce quantifiers
 \end{itemize}
+    \vspace{0.25cm} \\
+This way of specifying a list is quite cumbersome,
+    \begin{align*}
+        & p \hookrightarrow v_1,p_1 \; \land \\
+        & p_1 \hookrightarrow v_2, p_2 \; \land \\
+        & p_2 \hookrightarrow v_3, p_3 \; \land \\
+        & \ldots
+    \end{align*}
 \end{frame}
 
 \begin{frame}
 \frametitle{Example - List}
-
 \begin{align*}
     & \textrm{list} \; 0 \; x \equiv empty \land x = nil
     \\
@@ -251,13 +351,11 @@ This is a satisfying assignment for $list \; 3 \; x$,
     \{\; (0, (v,1)) , (1, (v,w)) \;\}
 \end{align*}
 The pointers $x$ and $y$ got aliased to point to $z$. \\
-\mscmt{\tiny{Actually, all of them get aliased and a  circular list of a single element would satisfy the above formula as well, correct? \\
-Show how you can avoid it by having pair-wise inequalities; how many inequalities will you need; combinatorially large}}
 \begin{align*}
     & list \; 3 \; x \equiv \\
     & (x = 0) \hookrightarrow v,1 \land \\
     & (y = 0) \hookrightarrow v,1 \land \\
-    & (z = 1) \hookrightarrow v,nil \land \\
+    & (z = 1) \hookrightarrow v,nil
 \end{align*}
 \end{frame}
 
