@@ -250,7 +250,9 @@ This is a satisfying assignment for $list \; 3 \; x$,
     & h = 
     \{\; (0, (v,1)) , (1, (v,w)) \;\}
 \end{align*}
-The pointers $x$ and $y$ got aliased to point to $z$.
+The pointers $x$ and $y$ got aliased to point to $z$. \\
+\mscmt{\tiny{Actually, all of them get aliased and a  circular list of a single element would satisfy the above formula as well, correct? \\
+Show how you can avoid it by having pair-wise inequalities; how many inequalities will you need; combinatorially large}}
 \begin{align*}
     & list \; 3 \; x \equiv \\
     & (x = 0) \hookrightarrow v,1 \land \\
