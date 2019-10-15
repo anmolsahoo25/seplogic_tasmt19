@@ -206,25 +206,57 @@ Separating conjunction,
 \end{frame}
 
 \section{Inductive predicates}
-
-\mscmt{\tiny{You should show more examples (list would be good) to make the following points:
+\begin{frame}
+\frametitle{Need for inductive predicates}
 \begin{itemize}
-\item How the expressiveness of * allows to you to ensure no alias without separation guarantee to state inequalities : show some example of a list where inadvertent cyclicity can be introduced without explicit inequalities to ensure no aliasing
-
-\item explicit unwound list examples can then be used to motivate need for inductive predicates
-
-\item you can then introduce inductive predicates
-\end{itemize}}}
-
-\mscmt{\tiny{Will you be able to formally cover the following in this lecture itself:
-\begin{itemize}
-\item Formally introduce the satisfaction problem for quantifier=free fragment of SL w/o inductive definitions
-
-\item The labeled inference rules shown in the paper that allows you to reduce the satisfaction problem of SL into the theory of T + Universa qunt instantiation
-
-\item we can do the lazy version and extension of satisfaction procedure for inductive pred later
-
+    \item Most interesting data structures in programs are defined as inductive systems
+    \item For example : linked lists, trees, graphs
+    \item Being able to reason about these in SL is useful
+    \item But inductive predicates introduce quantifiers
 \end{itemize}
-}}
+\end{frame}
+
+\begin{frame}
+\frametitle{Example - List}
+
+\begin{align*}
+    & \textrm{list} \; 0 \; x \equiv empty \land x = nil
+    \\
+    & \textrm{list} \; n \; x \equiv \exists y. (x \hookrightarrow n,y) * (list \; (n-1) \; y)
+\end{align*}
+
+\begin{itemize}
+    \item This defines a linked-list rooted at $x$
+    \item Base case : empty list where heap is empty and root pointer is null
+    \item Inductive case : the root points to a struct which has a value and the pointer for the remaining list
+    \item Separately, the next pointer points to a list. Prevents pointer aliasing, each pointer is different
+\end{itemize}
+\end{frame}
+
+\begin{frame}
+\frametitle{Comparison with pointers}
+Begin by defining a list in pointer logic,
+\begin{align*}
+    & \textrm{list} \; 0 \; x \equiv x = nil
+    \\
+    & \textrm{list} \; n \; x \equiv \exists y. (x \hookrightarrow v,y) \land (list \; (n-1) \; y)
+\end{align*}
+
+This is a satisfying assignment for $list \; 3 \; x$,
+\begin{align*}
+    & I = 
+    \{\; (x,0), (y,0), (z,1) , (w,nil) \;\}
+    \\
+    & h = 
+    \{\; (0, (v,1)) , (1, (v,w)) \;\}
+\end{align*}
+The pointers $x$ and $y$ got aliased to point to $z$.
+\begin{align*}
+    & list \; 3 \; x \equiv \\
+    & (x = 0) \hookrightarrow v,1 \land \\
+    & (y = 0) \hookrightarrow v,1 \land \\
+    & (z = 1) \hookrightarrow v,nil \land \\
+\end{align*}
+\end{frame}
 
 \end{document}
