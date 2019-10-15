@@ -1,0 +1,199 @@
+\documentclass{beamer}
+\usepackage[utf8]{inputenc}
+
+\usetheme{Madrid}
+\usecolortheme{default}
+\newcommand\sepimp{\mathrel{-\mkern-6mu*}}
+
+%------------------------------------------------------------
+%This block of code defines the information to appear in the
+%Title page
+\title %optional
+{Introduction to Separation Logic}
+
+\author[\footnote{Heavily}]% (optional)
+{Heavily borrows from slides by Cristiano Calcagno, Imperial College London}
+
+
+%End of title page configuration block
+%------------------------------------------------------------
+
+
+
+%------------------------------------------------------------
+%The next block of commands puts the table of contents at the 
+%beginning of each section and highlights the current section:
+
+\AtBeginSection[]
+{
+  \begin{frame}
+    \frametitle{Table of Contents}
+    \tableofcontents[currentsection]
+  \end{frame}
+}
+%------------------------------------------------------------
+
+
+\begin{document}
+
+%The next statement creates the title page.
+\frame{\titlepage}
+
+
+
+%---------------------------------------------------------
+%This block of code is for the table of contents after
+%the title page
+\begin{frame}
+\frametitle{Table of Contents}
+\tableofcontents
+\end{frame}
+%---------------------------------------------------------
+
+
+\section{Introducing Separation Logic}
+
+%---------------------------------------------------------
+\begin{frame}
+\frametitle{Syntax of Separation Logic}
+\begin{itemize}
+\item Given a decidable base-theory $T$, the syntax of separation logic $SL(T)_{Loc,Data}$ is presented
+\item $Loc$ and $Data$ represent the type of the address and the values
+\item E.g Setting $Loc$ and $Data$ to be $Int$, then our addresses and values are integers
+\end{itemize}
+
+\begin{align*}
+    P,Q ::= \; false \;
+          & \lvert \; P \land Q \;
+          \lvert \; P \lor Q \;
+          \lvert \; P \to Q \\
+          & \lvert \; P * Q \;
+            \lvert \; P \sepimp Q \\
+          & \lvert E = E' \;
+            \lvert E \hookrightarrow E' \;
+            \lvert empty
+\end{align*}
+
+We use $E$ and $E'$ to denote expressions in the base theory, where pointer indirection is not used.
+\end{frame}
+%---------------------------------------------------------
+
+
+\begin{frame}
+\frametitle{Semantics of Separation Logic}
+The model consists of an interpretation $(I)$ and a heap $(h)$
+
+\begin{align*}
+    I &: \textrm{Var} \to \textrm{Loc} \\ 
+    h &: \textrm{Loc} \to \textrm{Data}
+\end{align*}
+
+\begin{align*}
+    I,h &\models false \hspace{3.5cm}     & \textrm {never satisfied} \\
+    I,h &\models P \land Q \hspace{3.5cm} & I,h \models P \; \textrm{and} \; I,h \models Q \\
+    I,h &\models P \lor Q \hspace{3.5cm} & I,h \models P \; \textrm{or} \; I,h \models Q \\
+    I,h &\models P \to Q \hspace{3.5cm} & I,h \models P \; \textrm{implies} \; I,h \models Q \\
+    I,h &\models E = E' \hspace{3.5cm} & [\![ E ]\!]_I = [\![ E' ]\!]_I
+\end{align*}
+
+We use $[\![E]\!]_I$, to denote the value of $E$ under the interpretation $I$.
+\end{frame}
+
+\begin{frame}
+\frametitle{Semantics of Separation Logic}
+
+Empty heap
+\begin{align*}
+    I,h \models empty \\ 
+    \textrm{iff} \; h = \phi
+\end{align*}
+
+Separating conjunction
+\begin{align*}
+    I,h \models P * Q \hspace{3.5cm} \\ 
+    \textrm{iff} \; \exists h_1,h_2.(h_1 \bot h_2) \land (h = h1 \circ h2) \land I,h_1 \models P \land I,h_2 \models Q \\
+\end{align*}
+
+Where $h_1 \bot h_2$ denotes that the heaps are disjoint and $h_1 \circ h_2$ means their union.
+\end{frame}
+
+\begin{frame}
+\frametitle{Semantics of Separation Logic}
+
+Separating Implication
+\begin{align*}
+    I,h \models P \sepimp Q \hspace{3.5cm} \\ 
+    \textrm{iff} \; \forall h'.(h \bot h') \land (I,h' \models P) \to I,h \circ h' \models Q
+\end{align*}
+
+Interpretation : If we extend the current heap with a disjoint heap satisfying P, then the new heap satisfies Q. In some ways, we can imagine that our current heap is only missing the records of P, to make it satisfy Q.
+\vspace{0.5cm} \\
+
+Points to
+\begin{align*}
+    I,h \models E \hookrightarrow E' \\ 
+    \textrm{iff} \; h([\![ E ]\!]_I) = [\![ E' ]\!]_I
+\end{align*}
+\end{frame}
+
+\begin{frame}
+\frametitle{Examples}
+Points to, 
+\begin{align*}
+    & F : x \hookrightarrow 10 \\
+    & I : \{(x,0)\} \\
+    & h : \{(0,10)\} \\
+    & I,h \models F
+\end{align*}
+
+Separating conjunction,
+\begin{align*}
+    & F : x \hookrightarrow 10 * y \hookrightarrow 20 \\
+    & I : \{ (x,0), (y,1) \} \\
+    & h : \{(0,10), (1,20)\} \\
+    & I,h \models F
+\end{align*}
+
+\end{frame}
+
+\begin{frame}
+\frametitle{Examples}
+Separating Implication
+\begin{align*}
+    I,h \models P \sepimp Q \hspace{3.5cm} \\ 
+    \textrm{iff} \; \forall h'.(h \bot h') \land (I,h' \models P) \to I,h \circ h' \models Q
+\end{align*}
+
+Example,
+\begin{align*}
+    & F : (x \hookrightarrow 10) \sepimp (x \hookrightarrow 10 * y \hookrightarrow 20) \\
+    & I : \{(x,0), (y,1)\} \\
+    & h' : \{(0,10)\} \\
+    & h : \{(1,20) \} \\
+    & h \circ h' : \{(0,10), (1,20)\} \\
+    & I,h \models F
+\end{align*}
+\end{frame}
+
+\section{Relation with Pointer Logic}
+
+\begin{frame}
+\frametitle{Translating Separation Logic into Pointer Logic}
+Points to,
+\begin{align*}
+    I,h & \models x \hookrightarrow v \\
+    & \Longleftrightarrow \\
+    L,M & \models \ ^*x = v
+\end{align*}
+
+Separating conjunction,
+\begin{align*}
+    I,h & \models x \hookrightarrow v_1 * y \hookrightarrow v_2 \\
+    & \Longleftrightarrow \\
+    L,M & \models \ ^*x = v_1 \; \land \ ^*y = v_2 \land x \neq y
+\end{align*}
+\end{frame}
+
+\section{Inductive predicates}
+
+\end{document}
