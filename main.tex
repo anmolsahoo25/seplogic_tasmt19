@@ -202,7 +202,8 @@ Example,
 \begin{frame}
 \frametitle{Applications}
 Separation logic has been useful in Hoare logic for program verification. We will
-have a quick look at Hoare logic.
+have a quick look at Hoare logic. \\
+\mscmt{\tiny{This is \emph{strongest post condition} and must be introduced as such}}
 
 \begin{align*}
     & \{P\}S\{Q\} \\
@@ -230,6 +231,7 @@ Example,
 \begin{align*}
     \{x > 0\}x := x + 1\{x >= 0\}
 \end{align*}
+\mscmt{\tiny{This is correct as a ordinary triple; but strongest post condition would be $x > 0$}}
 
 This is also valid,
 \begin{align*}
@@ -239,6 +241,7 @@ This is also valid,
 In fact, $(x > -1) \to (x > 0)$, thus, $(x > -1)$ is weaker. Finding the
 weakest unique precondition, can then let us reason about all the states,
 that the program can be in before, to guarantee $Q$ to hold.
+\mscmt{\tiny{This can be confusing; first introduce SP, then formally define WP in a slide after this and talk about it before you show the next to next slide}}
 \end{frame}
 
 \begin{frame}
