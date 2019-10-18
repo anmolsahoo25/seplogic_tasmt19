@@ -114,40 +114,26 @@ a partial function.
 \end{frame}
 
 \begin{frame}
-\frametitle{Semantics of Separation Logic}
+\frametitle{Semantics of Separation Logic:}
 
-Empty heap
-\begin{align*}
-    I,h \models empty \\ 
-    \textrm{iff} \; h = \phi
-\end{align*}
-
-Separating conjunction
+Empty heap: ~~~~~~~~
+%\begin{align*}
+   $ I,h \models empty 
+    \textrm{iff} \; h = \phi $
+%\end{align*}
+\vspace{0.5cm} \\
+Points to: ~~~~~~~~
+%\begin{align*}
+    $I,h \models E \hookrightarrow E' 
+    \textrm{iff} \; h([\![ E ]\!]_I) = [\![ E' ]\!]_I $ \\[0.5cm]
+%\end{align*}
+Separating conjunction: defines two separate areas of heap
 \begin{align*}
     I,h \models P * Q \hspace{3.5cm} \\ 
-    \textrm{iff} \; \exists h_1,h_2.(h_1 \# h_2) \land (h = h1 \circ h2) \land I,h_1 \models P \land I,h_2 \models Q \\
+    \textrm{iff} \; \exists h_1,h_2.(h_1 \# h_2) \land (h = h1 \circ h2) \land I,h_1 \models P \land I,h_2 \models Q,
 \end{align*}
-
-Where $h_1 \# h_2$ denotes that the heap domains are disjoint and $h_1 \circ h_2$ means their union. \\
-\end{frame}
-
-\begin{frame}
-\frametitle{Semantics of Separation Logic}
-
-Separating Implication
-\begin{align*}
-    I,h \models P \sepimp Q \hspace{3.5cm} \\ 
-    \textrm{iff} \; \forall h'.(h \# h') \land (I,h' \models P) \to I,h \circ h' \models Q
-\end{align*}
-
-Interpretation : If we extend the current heap with a disjoint heap satisfying P, then the new heap satisfies Q. In some ways, we can imagine that our current heap is only missing the records of P, to make it satisfy Q.
-\vspace{0.5cm} \\
-
-Points to
-\begin{align*}
-    I,h \models E \hookrightarrow E' \\ 
-    \textrm{iff} \; h([\![ E ]\!]_I) = [\![ E' ]\!]_I
-\end{align*}
+%\vspace{-0.25cm}
+where $h_1 \# h_2$ denotes that the heap domains are disjoint and $h_1 \circ h_2$ means their union.
 \end{frame}
 
 \begin{frame}
@@ -183,6 +169,20 @@ Another example,
 \end{frame}
 
 \begin{frame}
+\frametitle{Separating Implication: $\sepimp$}
+
+Separating Implication
+\begin{align*}
+    I,h \models P \sepimp Q \hspace{3.5cm} \\ 
+    \textrm{iff} \; \forall h'.(h \# h') \land (I,h' \models P \to I,h \circ h' \models Q)
+\end{align*}
+
+Interpretation: Defines condition under which $P$ is $separable$ from $Q$ \\[0.15cm]
+$P$ is $separable$ from $Q$ if for every heap $h'$ that satisfies $P$, we can make another heap $h$ satisfy $Q$ by $disjointedly~extending$ $h$ by $h'$
+
+\end{frame}
+
+\begin{frame}
 \frametitle{Examples}
 Separating Implication
 \begin{align*}
@@ -199,7 +199,6 @@ Example,
     & h \circ h' : \{(0,10), (1,20)\} \\
     & I,h \models F
 \end{align*}
-\mscmt{\tiny{Show some negative examples of --* formula that are not satisfiable by a I and H; also does phi*psi => phi -* psi?}}
 \end{frame}
 
 \section{Relation with Pointer Logic}
