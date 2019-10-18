@@ -138,19 +138,21 @@ where $h_1 \# h_2$ denotes that the heap domains are disjoint and $h_1 \circ h_2
 
 \begin{frame}
 \frametitle{Examples}
-Points to, 
-\begin{align*}
-    & F : x \hookrightarrow 10 \\
-    & I : \{(x,0)\} \\
-    & h : \{(0,10)\} \\
-    & I,h \models F
-\end{align*}
+Points to: 
+%\begin{align*}
+ $F : x \hookrightarrow 10;~~I : \{(x,0)\};~~h : \{(0,10)\};~~I,h \models F$ \\[0.4cm]
+ 
+%\end{align*}
 
 Separating conjunction,
 \begin{align*}
-    & F : x \hookrightarrow 10 * y \hookrightarrow 20 \\
-    & I : \{ (x,0), (y,1) \};~~h : \{(0,10), (1,20)\};~~I,h \models F \\[0.15cm]
-    & I : \{ (x,0), (y,1) \};~~h' : \{(0,10), (1,10)\};~~I,h' \models F~?
+    & F1 : x \hookrightarrow 10 * y \hookrightarrow 20 \\
+    & I : \{ (x,0), (y,1) \};~~h : \{(0,10), (1,20)\};~~I,h \models F1 \\[0.15cm]
+    & I : \{ (x,0), (y,1) \};~~h' : \{(0,10), (1,10)\};~~I,h' \models F1~?; \\
+    &~~~~~~~~\tiny{yes,~if~10~is~(non~Loc)~Data}\\[0.25cm]
+    & F2: (x \hookrightarrow 10 \land 10 \hookrightarrow 1) * (y \hookrightarrow 10) \\
+    & I : \{(x,0), (y,1)\}; h: \{ (0, 10), (1, 10), (10, 15)\}; I, h \models F2 ?\\
+    &~~~~~~~~\tiny{No;~no~sharing~allowed~at~any~level}
 \end{align*}
 \end{frame}
 
@@ -158,14 +160,14 @@ Separating conjunction,
 \frametitle{Examples}
 Another example,
 \begin{align*}
-    & F : x \hookrightarrow y * y \hookrightarrow x \\
+    & F1 : x \hookrightarrow y * y \hookrightarrow x  \\
     & I : \{(x,0), (y,1)\}
     & h : \{(0,1), (1, 0)\} \\
-    & I,h \models F \\[0.15cm]
+    & I,h \models F1 \\[0.15cm]
     & I' : \{(x,0), (y,0)\} \\
     & h' : \{(0,0)\} \\
-    & I',h' \not\models F
-\end{align*}
+    & I',h' \not\models F1
+    \end{align*}
 \end{frame}
 
 \begin{frame}
@@ -177,28 +179,28 @@ Separating Implication
     \textrm{iff} \; \forall h'.(h \# h') \land (I,h' \models P \to I,h \circ h' \models Q)
 \end{align*}
 
-Interpretation: Defines condition under which $P$ is $separable$ from $Q$ \\[0.15cm]
+Intiution: Defines condition under which $P$ is $separable$ from $Q$ \\[0.15cm]
 $P$ is $separable$ from $Q$ if for every heap $h'$ that satisfies $P$, we can make another heap $h$ satisfy $Q$ by $disjointedly~extending$ $h$ by $h'$
 
 \end{frame}
 
 \begin{frame}
 \frametitle{Examples}
-Separating Implication
-\begin{align*}
-    I,h \models P \sepimp Q \hspace{3.5cm} \\ 
-    \textrm{iff} \; \forall h'.(h \# h') \land (I,h' \models P) \to I,h \circ h' \models Q
-\end{align*}
+Separating Implication: $~~~~~~~~~~\tiny{I,h \models P \sepimp Q 
+    \iff \; \forall h'.(h \# h') \land (I,h' \models P) \to I,h \circ h' \models Q}$ \\[0.25cm]
 
-Example,
-\begin{align*}
-    & F : (x \hookrightarrow 10) \sepimp (x \hookrightarrow 10 * y \hookrightarrow 20) \\
-    & I : \{(x,0), (y,1)\} \\
-    & h' : \{(0,10)\} \\
-    & h : \{(1,20) \} \\
-    & h \circ h' : \{(0,10), (1,20)\} \\
-    & I,h \models F
-\end{align*}
+Examples: \\
+%\begin{align*}
+$~~~F1 : (x \hookrightarrow 10) \sepimp (x \hookrightarrow 10 * y \hookrightarrow 20)$ \\
+$~~~~~~~I,h \models F1$ with $I : \{(x,0), (y,1)\};~~h : \{(1,20) \}$ because:
+$~~~~~~~~~~~~~~h' : \{(0,10)\};~~h \circ h' : \{(0,10), (1,20)\}$ \\[0.2cm]
+
+$~~~F2 : (x \hookrightarrow 10) \sepimp (x \hookrightarrow 20 * y \hookrightarrow 20)$ \\
+$~~~~~~~I,h \not\models F2$ with $I : \{(x,0), (y,1)\};~~h : \{(1,20) \}$ because:
+\small{$~~~~~~~~~~~~~h \circ h' \not\models (x \hookrightarrow 20 * y \hookrightarrow 20)$ with $h' : \{(0,10)\};~~h \circ h' : \{(0,10), (1,20)\}$}\\[0.2cm]
+$~~~~~h \models( emp \sepimp \phi)$, if $h \models \phi$; ~~~$h_2 \models (\phi_1 \sepimp \phi_2)$, if $h_1 \circ h_2 \models (\phi_1 * \phi_2)$
+%\end{align*}
+
 \end{frame}
 
 \section{Relation with Pointer Logic}
