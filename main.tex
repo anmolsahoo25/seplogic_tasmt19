@@ -64,8 +64,7 @@
 \begin{itemize}
 \item Given a decidable base-theory $T$, the syntax of separation logic $SL(T)_{Loc,Data}$ is presented
 \item $Loc$ and $Data$ represent the type of the address and the values
-\mscmt{\tiny{1. Is T different from Loc, Data?  I thought they would be part of T \\
-2. Data can be Loc too, right otherwise you couldn't express indirection}}
+
 \item $Loc$ and $Data$ can be any sorts, but $Loc$ should be countably
     infinite, for the purpose of the decision procedure
 \item For example, $Loc$ and $Data$ can be $Int$
@@ -86,8 +85,6 @@
 We use $E$ and $E'$ to denote expressions in the base theory,
 where heap indirection is not used. This is needed to syntactically
 rule out formulas like $F : (x \hookrightarrow v_1) = (y \hookrightarrow v_2)$
-\mscmt{\tiny{What are the operators allowed in E?  Obviously it scan't have dref(*); can it have arithmetic over Loc?  I guess yes;
-Can it have \&; I guess not?}}
 \end{frame}
 %---------------------------------------------------------
 
